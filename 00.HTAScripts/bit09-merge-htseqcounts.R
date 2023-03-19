@@ -3,8 +3,9 @@
 ### Download files from server on your local machine using FileZilla
 ################################################################################
 ### Get names count files
+### Provide your own path
 ################################################################################
-pathFiles <- "/home/guest/HighTroughput/SingleEnded/007.HTSeqCount"
+pathFiles <- ""
 patternFiles <- ".txt"
 patternAfterSampleName <- "_1_filtered_sorted_merged"
 patternBeforeSampleName <- "counts_"
