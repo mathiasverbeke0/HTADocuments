@@ -116,7 +116,7 @@ DGEobject$samples$lib.size
     sample.col <- color_picker(DGEobject = DGEobject, groupsize = 4)
     
     # Image settings
-    par(mar = c(4,4,2,2), mfrow = c(1,2))
+    par(mar = c(4,5,2,2), mfrow = c(1,2))
     
     # Image
     bp <- barplot(DGEobject$samples$lib.size*1e-6,
@@ -126,7 +126,8 @@ DGEobject$samples$lib.size
                   col = sample.col,
                   horiz = T,
                   xlim = c(0, max(DGEobject$samples$lib.size*1e-6) + 5),
-                  cex.main = 1.5
+                  cex.main = 1.5,
+                  cex.lab = 1.1
     )
     
     # Axis
@@ -134,20 +135,20 @@ DGEobject$samples$lib.size
          labels = DGEobject$samples$Run, 
          at = bp,
          las = 2,
-         cex.axis = 0.8)
+         cex.axis = 0.9)
     
     # Labels
     text(x = DGEobject$samples$lib.size*1e-6, 
          y = bp, 
          labels = round(DGEobject$samples$lib.size*1e-6, 2), 
          pos = 4, 
-         cex = 0.8)
+         cex = 0.9)
     
     text(x = DGEfiltered$samples$lib.size*1e-6, 
          y = bp, 
          labels = c(rep('T1', 4), rep('T4', 4)), 
          pos = 2, 
-         cex = 0.8)
+         cex = 0.9)
 
 
 
@@ -156,7 +157,7 @@ DGEobject$samples$lib.size
 
 ## Calculation of the counts per million
 cpm <- cpm(DGEobject)
-
+cpm['tlr21',]
 ## Calculation of the log(cpm) (base 2)
 log.cpm <- cpm(DGEobject, log = TRUE)
 
@@ -176,7 +177,7 @@ log.cpm <- cpm(DGEobject, log = TRUE)
 # F. DATA PRE-PROCESSING: REDUCE SUBSET OF GENES
 ################################################
 
-## Filtering out the biologically irrelevant genes
+## Filtering out the lowly expressed genes
 
     # Determine what rows to keep
     keep.exprs <- rowSums(cpm>1)>=4
@@ -209,7 +210,8 @@ log.cpmF <- cpm(DGEfiltered, log = TRUE)
                   col = sample.col,
                   horiz = T,
                   xlim = c(0, max(DGEfiltered$samples$lib.size*1e-6) + 5),
-                  cex.main = 1.5
+                  cex.main = 1.5,
+                  cex.lab = 1.1
     )
     
     # Axis
@@ -217,31 +219,32 @@ log.cpmF <- cpm(DGEfiltered, log = TRUE)
          labels = DGEfiltered$samples$Run, 
          at = bp,
          las = 2,
-         cex.axis = 0.8)
+         cex.axis = 0.9)
     
     # Labels
     text(x = DGEfiltered$samples$lib.size*1e-6, 
          y = bp, 
          labels = round(DGEfiltered$samples$lib.size*1e-6, 2), 
          pos = 4, 
-         cex = 0.8)
+         cex = 0.9)
     
     text(x = DGEfiltered$samples$lib.size*1e-6, 
          y = bp, 
          labels = c(rep('T1', 4), rep('T4', 4)), 
          pos = 2, 
-         cex = 0.8)
+         cex = 0.9)
     
 ## Create log-CPM value density plots (raw pre-filtered and post-filtered data)
     
+    # Number of samples
+    nsamples <- ncol(DGEfiltered$counts)
+    
     # Colors
-    # nsamples <- ncol(DGEfiltered$counts)
     # sample.col <- brewer.pal(nsamples, "Paired")
     sample.col <- color_picker(DGEobject = DGEobject, groupsize = 4)
     
-    
     # Image settings
-    par(mfrow = c(1,2))
+    # par(mfrow = c(1,2))
     
     # Density plot A: pre-filtered
     plot(density(log.cpm[,1]), 
@@ -250,13 +253,15 @@ log.cpmF <- cpm(DGEfiltered, log = TRUE)
          las = 1, 
          ylim = c(0,0.25),
          main = "LogCPM Distribution of Raw Data", 
-         xlab = "LogCPM")
+         xlab = "LogCPM", 
+         cex.main = 1.5,
+         cex.lab = 1.1)
     
     for (i in 2:nsamples){
       den <- density(log.cpm[,i])
       lines(den$x, den$y, col = sample.col[i], lwd = 2)
     }
-    
+
     # Straight line on plot A
     abline(v = 0, lty = 3)
     
@@ -264,7 +269,7 @@ log.cpmF <- cpm(DGEfiltered, log = TRUE)
     legend("topright", 
            c('T1 samples', 'T4 samples'), 
            text.col = unique(sample.col), 
-           cex = 0.8, 
+           cex = 1, 
            bty="n")
     
     # Density plot B: post-filtered
@@ -274,7 +279,9 @@ log.cpmF <- cpm(DGEfiltered, log = TRUE)
          las = 1, 
          ylim = c(0,0.25),
          main = "LogCPM Distribution of Filtered Data", 
-         xlab = "LogCPM")
+         xlab = "LogCPM",
+         cex.main = 1.5,
+         cex.lab = 1.1)
     
     for (i in 2:nsamples){
       den <- density(log.cpmF[,i])
@@ -285,14 +292,14 @@ log.cpmF <- cpm(DGEfiltered, log = TRUE)
             lwd = 2)
     }
     
-    # Straight line on plot A
+    # Straight line on plot B
     abline(v = 0, lty = 3)
     
-    # Legend of plot A
+    # Legend of plot B
     legend("topright", 
            c('T1 samples', 'T4 samples'), 
            text.col = unique(sample.col), 
-           cex = 0.8, 
+           cex = 1, 
            bty="n")
     
 
@@ -372,7 +379,7 @@ col.group <- as.character(col.group)
             main="MDS plot")
     
     legend("topright", 
-           c('T1 samples', 'T2 samples'), 
+           c('T1 samples', 'T4 samples'), 
            text.col = unique(col.group), 
            cex = 0.8, 
            bty="n")
@@ -386,8 +393,8 @@ glMDSPlot(log.cpmF.norm,
 
 
 
-# I. DIFFERENTIAL EXPRESSION ANALYSIS: DESIGN MATRIX AND CONTRASTS
-##################################################################
+# I. DIFFERENTIAL EXPRESSION ANALYSIS: DESIGN AND CONTRAST MATRIX
+#################################################################
 
 ## Construction of the "group" object with the condition of each sample
 
@@ -431,27 +438,39 @@ contr.matrix
                   design, 
                   plot = TRUE)
     
+        #@ Note: The voom function transforms the count data into data suitable 
+        #@ for linear modeling. This function does remove the heteroscedasticity.
+    
     vDGEf
 
 ## Fitting linear models for comparisons of interest
 vfitDGEf <- lmFit(vDGEf, design)
 
+    #@ Note: The lmFit function fits a linear model to the transformed count data (vDGEF).
+
 vfitDGEf <- contrasts.fit(vfitDGEf, 
                           contrasts = contr.matrix)
+    
+    #@ Note: The contrast.fit function applies contrasts to the fitted linear model.
+    #@ Contrasts allow us to specify comparisons of interest between different 
+    #@ treatment conditions. 
 
 efitDGEf <- eBayes(vfitDGEf)
+
+    #@ The eBayes function applies emperical Bayes smoothing to the linear model.
+    #@ This helps to shrink the the estimated gene variances towards a common value,
+    #@ wich improves the accuracy of the differential expression analysis.
 
 plotSA(efitDGEf, 
        main = "Final model")
 
 
-
 # K. DIFFERENTIAL EXPRESSION ANALYSIS: EXAMINING THE DE GENES
 #############################################################
 
-## Examining the number of DE genes (less strict threshold*)
+## Examining the number of DE genes (with the less strict threshold*)
     
-    # Less strict threshold°
+    # Less strict threshold°: Looking at the p-value
     dtT1vsT4_efit <- decideTests(efitDGEf)
     summary(decideTests(efitDGEf))
     
@@ -498,7 +517,7 @@ par(mfrow = c(1,1), mar = c(8,6,4,2))
 ## Volcano plot 
 volcanoplot(efitDGEf, 
             coef = 1, 
-            highlight = 4, 
+            highlight = 0, 
             names = rownames(efitDGEf$coefficients),
             main = "Volcano plot T1 vs. T4",
             cex.main = 1.5)
@@ -575,7 +594,7 @@ par(mfrow = c(1,1), mar = c(1,6,4,2))
 topgenes
     
 ## Picking gene
-geneSymbol <- "LOC106602076"
+geneSymbol <- "LOC106590198"
 
 ## Construct bar plots 
     
@@ -621,3 +640,191 @@ geneSymbol <- "LOC106602076"
              at = bp2, las = 1, cex.axis = 0.8)
         
         title(main = paste0("Normalized log₂(cpm)\nvalues of ",geneSymbol))
+        
+
+# N. Bar plots significantly up- or down-regulated GOI
+######################################################
+
+## List of all gene symbols mentioned in the report        
+gene_symbols <- c("lhcgr", 
+                  "LOC106605452", 
+                  "LOC106566173", 
+                  "cld5", 
+                  "LOC106568355", 
+                  "ecm1", 
+                  "LOC100380416", 
+                  "LOC106567254", 
+                  "has3", 
+                  "tlr21", 
+                  "LOC106606326", 
+                  "LOC106606329", 
+                  "LOC106605509", 
+                  "LOC106589219", 
+                  "LOC106573839", 
+                  "LOC106563738", 
+                  "LOC123725202", 
+                  "LOC106563739", 
+                  "LOC106598658", 
+                  "LOC106575540", 
+                  "LOC106575562", 
+                  "LOC106582048", 
+                  "LOC106575468", 
+                  "LOC106606375", 
+                  "LOC106606373", 
+                  "ccl19a.1", 
+                  "LOC106565855", 
+                  "traf2", 
+                  "LOC106563303", 
+                  "LOC106567744", 
+                  "foxl2l", 
+                  "LOC101448029", 
+                  "gata4", 
+                  "LOC106583005", 
+                  "LOC100136466", 
+                  "amh", 
+                  "LOC100195512", 
+                  "LOC100136473", 
+                  "LOC106582116", 
+                  "star")
+
+significant_genes <- c()
+
+## Picking colors
+sample.col <- color_picker(DGEobject = DGEobject, groupsize = 4)
+
+## Construction of bar plots (only for significant genes!)
+for (gene in gene_symbols){
+  
+  if (!is.na(T1.vs.T4[gene,'adj.P.Val']) & T1.vs.T4[gene,'adj.P.Val'] <= 0.05){
+    adj.p.value <- round(T1.vs.T4[gene, 'adj.P.Val'],3)
+    log.fc <- round(T1.vs.T4[gene, 'logFC'],3)
+    
+    significant_genes <- c(significant_genes, gene)
+    
+    if (min(vDGEf$E[gene,]) < 0){
+      x.minimum <- min(vDGEf$E[gene,]) - 3
+      count.position <- c(2,2,2,2,4,4,4,4)
+    }
+    
+    else{
+      x.minimum <- 0
+      count.position <- 4
+    }
+  
+    
+    ##Image settings
+    jpeg(filename = paste0('~/Shared/', gene, '.jpg'), width = 1000, height = 460)
+    par(mfrow = c(1,2), mar = c(4,5,3,5)) 
+    
+    ## Box plot A: Raw counts
+
+        # Box plot
+        bp1 <- barplot(DGEobject$counts[gene,], 
+                       xlim = c(0,max(DGEobject$counts[gene,]) + 0.20 * max(DGEobject$counts[gene,])), 
+                       horiz = TRUE, 
+                       axes = F, 
+                       axisnames = F,
+                       col = sample.col,
+                       xlab = 'Counts',
+                       cex.lab = 1.2)
+        
+        # Axis and title
+        axis(1, cex.axis = 1.2)
+        
+        axis(2, labels = colnames(DGEobject$counts), 
+             at = bp1, 
+             las = 1, 
+             cex.axis = 1.2)
+        
+        title(main = paste("Transcript Counts of", gene, "\n(Raw Data)"), cex.main = 1.7)
+        
+        # Labels and legend
+        text(x = DGEobject$counts[gene,], 
+             y = bp1, 
+             labels = DGEobject$counts[gene,], 
+             pos = 4, 
+             cex = 1.2)
+        
+        text(x = DGEobject$counts[gene,], 
+             y = bp, 
+             labels = c(rep('T1', 4), rep('T4', 4)), 
+             pos = 2, 
+             cex = 1.2)
+        
+        legend('bottomright', 
+               legend = c(paste('adj.p.value:', adj.p.value), paste('LogFC:', log.fc)),
+               cex = 1.2)
+        
+        
+        ## Box plot B: LogCPM
+        
+        # Box plot
+        bp2 <- barplot(vDGEf$E[gene,], 
+                       xlim = c(x.minimum, max(vDGEf$E[gene,]) + 2), 
+                       xlab = 'LogCPM',
+                       horiz = TRUE, 
+                       col = sample.col, 
+                       axes = F, 
+                       axisnames = F, 
+                       cex.lab = 1.2)
+        
+        # Axis and title
+        axis(1, cex.axis = 1.2)
+        
+        axis(2, labels = colnames(vDGEf$E), 
+             at = bp2, las = 1, cex.axis = 1.2)
+        
+        title(main = paste0("LogCPM Values of ",gene, "\n(Normalized Data)"), cex.main = 1.7)
+        
+        # Labels
+        text(x = vDGEf$E[gene,], 
+             y = bp2, 
+             labels = round(vDGEf$E[gene,],2), 
+             pos = count.position, 
+             cex = 1.2)
+        
+        dev.off()
+  }
+}
+
+
+## Heat map
+par(mfrow = c(1,1), mar = c(1,6,4,2))
+# Color pallets to use in heat map
+color.palette <- colorRampPalette(c("red", "yellow", "green"))(n = 200)
+color.palette.2  <- colorRampPalette(c("#FC8D59", "#FFFFBF", "#91CF60"))(n = 200)
+color.palette.3 <- colorRampPalette(c("#0d50b2", 
+                                      "white", 
+                                      "#c5081a"))(n = 200)
+
+# Create heat map
+heatmap.2(vDGEf$E[significant_genes,],
+          ## DENDOGRAM CONTROL
+          Rowv = FALSE, # do not reorder rows!
+          dendrogram = "column",
+          
+          ## DATA SCALING
+          scale = "row",
+          
+          ## image plot
+          col = color.palette.3, 
+          
+          ## LEVEL TRACE
+          trace = "none", 
+          
+          ## ROW/COLUMN LABELING
+          margins = c(12,8),
+          cexRow = 0.9,
+          cexCol = 0.9,
+          labRow = significant_genes, 
+          labCol = str_c(colnames(DGEf.norm), group, sep = "-"),
+          
+          ## COLOR KEY + DENSITY INFO
+          key = TRUE,
+          density.info = "none",
+          
+          ## OTHER
+          lmat = rbind(4:3,2:1), 
+          lhei = c(1,4), 
+          lwid = c(1,4)
+)
