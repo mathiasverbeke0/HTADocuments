@@ -641,11 +641,12 @@ geneSymbol <- "LOC106590198"
         
         title(main = paste0("Normalized log₂(cpm)\nvalues of ",geneSymbol))
         
+        
 
-# N. Bar plots significantly up- or down-regulated GOI
-######################################################
+# N. Bar plots significantly up- or downregulated GOI (Mohamed et al. (2022))
+#############################################################################
 
-## List of all gene symbols mentioned in the report        
+## List of all gene symbols mentioned by Mohamed et al. (2022)        
 gene_symbols <- c("lhcgr", 
                   "LOC106605452", 
                   "LOC106566173", 
@@ -788,16 +789,21 @@ for (gene in gene_symbols){
 }
 
 
-## Heat map
+
+# O. Heat map significantly up- or downregulated GOI (Mohamed et al. (2022))
+############################################################################
+
+## Image settings
 par(mfrow = c(1,1), mar = c(1,6,4,2))
-# Color pallets to use in heat map
+
+## Color pallets to use in heat map
 color.palette <- colorRampPalette(c("red", "yellow", "green"))(n = 200)
 color.palette.2  <- colorRampPalette(c("#FC8D59", "#FFFFBF", "#91CF60"))(n = 200)
 color.palette.3 <- colorRampPalette(c("#0d50b2", 
                                       "white", 
                                       "#c5081a"))(n = 200)
 
-# Create heat map
+## Create heat map
 heatmap.2(vDGEf$E[significant_genes,],
           ## DENDOGRAM CONTROL
           Rowv = FALSE, # do not reorder rows!
