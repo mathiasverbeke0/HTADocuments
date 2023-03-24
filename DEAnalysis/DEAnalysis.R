@@ -8,7 +8,12 @@ library(Rtsne)
 library(gplots)
 library(stringr)
 
+## Check package versions 
+items <- c('limma', 'edgeR', 'Glimma', 'RColorBrewer', 'Rtsne', 'gplots', 'stringr')
 
+for (item in items){
+  cat(paste0(item, ': ' ,packageVersion(item), '\n'))
+}
 
 # B. FUNCTIONS
 ##############
